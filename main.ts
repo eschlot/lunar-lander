@@ -61,6 +61,19 @@ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
         `)
     Rakete.ax = 0 - 3
 })
+scene.onOverlapTile(SpriteKind.Player, sprites.builtin.brick, function (sprite, location) {
+    if (Rakete.vy > 5) {
+        game.over(false, effects.melt)
+    } else {
+        game.over(true, effects.confetti)
+    }
+})
+scene.onOverlapTile(SpriteKind.Player, sprites.castle.shrub, function (sprite, location) {
+    game.over(false, effects.melt)
+})
+scene.onOverlapTile(SpriteKind.Player, sprites.builtin.oceanDepths1, function (sprite, location) {
+    game.over(false, effects.melt)
+})
 controller.left.onEvent(ControllerButtonEvent.Released, function () {
     Rakete.ax = idle
     Rakete.setImage(img`
@@ -82,6 +95,9 @@ controller.left.onEvent(ControllerButtonEvent.Released, function () {
         . . . . . . . . . . . . . . . . 
         `)
 })
+scene.onOverlapTile(SpriteKind.Player, sprites.castle.rock0, function (sprite, location) {
+    game.over(false, effects.melt)
+})
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     Rakete.setImage(img`
         . . . . . . . 1 . . . . . . . . 
@@ -102,6 +118,9 @@ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
         . . . . . . . 5 . . . . . . . . 
         `)
     Rakete.ax = 0 + 3
+})
+scene.onOverlapTile(SpriteKind.Player, sprites.builtin.coral0, function (sprite, location) {
+    game.over(false, effects.melt)
 })
 controller.right.onEvent(ControllerButtonEvent.Released, function () {
     Rakete.ax = idle
@@ -129,6 +148,7 @@ let idle = 0
 let auftrieb = 0
 auftrieb = 2
 idle = 0
+info.setLife(500)
 Rakete = sprites.create(img`
     . . . . . . . 1 . . . . . . . . 
     . . 8 . . . 1 1 1 . . . 8 . . . 
@@ -149,19 +169,24 @@ Rakete = sprites.create(img`
     `, SpriteKind.Player)
 Rakete.ay = auftrieb
 scene.cameraFollowSprite(Rakete)
-tiles.setTilemap(tiles.createTilemap(hex`20000d000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005020400000000000000000000010101030000000000040000000000000000000202020003030503000000000002020202050000000002010105000000000202020202050202020200000000000202020202000000000202020500000005020202020202020202020200000000020202020200000000020202000000000202020202020202020202020000000002020202020000000000020200010101020202020202020202020202000000000202020202050607020202020202020202020202020202020202020201010101020202020202020202020202`, img`
+tiles.setTilemap(tiles.createTilemap(hex`20000d000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005020400000000000000000000050101030000000000040000000000000000000202020003030503000000000002020202050000000002010105000000000202020202050202020200000000000202020202000000000202020500000505020202020202020202020200000000020202020200000000020202050000050202020202020202020202020000000002020202020000000000020205010105020202020202020202020202000000000202020202050607020202020202020202020202020202020202020201010101020202020202020202020202`, img`
     ................................
     ................................
     ................................
     ................................
     ................................
     ................................
-    .......222..........2222.....2..
-    .......2.2.2222.....2..22....222
-    .....222.222..2.....2...2....2..
-    ....22........22....2...2....22.
-    ....2..........2....2...2.....2.
-    .2222..........2....2...2222222.
-    22.............222222...........
+    ................................
+    ................................
+    ................................
+    ................................
+    ................................
+    2...............................
+    ................................
     `, [myTiles.transparency16,sprites.builtin.brick,sprites.builtin.oceanDepths1,sprites.builtin.coral0,sprites.castle.rock0,sprites.castle.shrub,sprites.castle.saplingOak,sprites.castle.rock2], TileScale.Sixteen))
 effects.starField.startScreenEffect(5000)
+game.onUpdate(function () {
+    if (controller.left.isPressed() || (controller.right.isPressed() || controller.up.isPressed())) {
+        info.setLife(info.life() - 1)
+    }
+})
